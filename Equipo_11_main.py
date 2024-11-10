@@ -11,7 +11,7 @@ def nearest_neighbor(graph, start, n):
         n (int): Número total de nodos en el grafo.
 
     Returns:
-        list: Lista que representa el camino recorrido, terminando en el nodo inicial.
+        path (list): Lista que representa el camino recorrido, terminando en el nodo inicial.
     """
     visited = [False] * n
     path = [start]
@@ -42,7 +42,8 @@ def repeated_nearest_neighbor(graph, n):
         n (int): Número total de nodos en el grafo.
 
     Returns:
-        tuple: Contiene la mejor ruta encontrada (list) y el costo de la mejor ruta (int).
+        tuple: best_path(lis) Mejor ruta encontrada 
+                best_cost(int) Costo de la mejor ruta
     """
     best_path = None
     best_cost = float('inf')
@@ -103,6 +104,9 @@ def ford_fulkerson(graph, inicio, destino, n):
             inicio: Nodo de inicio
             destino: Nodo de destino
             n: Número de nodos
+    Returns: max_flow(int) Flujo máximo
+    Descripción: Algoritmo de fold-fulkerson para encontrar el flujo máximo
+                de un grafo.
     """
     # Lista de nodos padres
     parent = [-1] * n
@@ -134,7 +138,115 @@ def ford_fulkerson(graph, inicio, destino, n):
 
     return max_flow
 
+
+
+"""
+    Problema 4.
+"""
     
+import math
+
+class NodoKDTree:
+    def __init__(self, punto, izquierda = None, derecha = None):
+        self.punto = punto          # Coordenada del nodo
+        self.izquierda = izquierda  # Subárbol izquierdo
+        self.derecha = derecha      # Subárbol derecho
+
+def construir_kdtree(puntos, profundidad = 0):
+    """
+    Función: construir_kdtree
+    Parámetros: 
+            puntos (list): Lista de puntos en el plano
+            profundidad(int): Nivel de profundidad del árbol
+    Returns: NodoKDTree
+    Descripción: Construye un árbol KD a partir de una lista de puntos en el plano.        
+    """
+    if not puntos:
+        return None
+
+    # Elegir el eje (x o y) según la profundidad
+    k = 2     # Coordenadas -> 2
+    eje = profundidad % k   # Coordenada 0 -> x
+
+    # Ordena los puntos y elige punto medio
+    puntos.sort(key = lambda punto: punto[eje])
+    mediana = len(puntos) // 2
+
+    # Crea nodo y construye subárboles recursivamente
+    return NodoKDTree(
+        punto = puntos[mediana],
+        izquierda = construir_kdtree(puntos[:mediana], profundidad + 1),
+        derecha = construir_kdtree(puntos[mediana + 1:], profundidad + 1)
+    )
+
+def calcular_distancia(punto1, punto2):
+    """
+    Función: distancia_euclidiana
+    Parámetros: 
+            punto1 (tuple): Coordenadas del primer punto
+            punto2 (tuple): Coordenadas del segundo punto
+    Returns: float de la distancia
+    Descripción: Calcula la distancia eucladiana entre dos puntos.
+    """
+    suma = 0
+    for i in range(len(punto1)):
+        suma += (punto1[i] - punto2[i]) ** 2
+
+    return math.sqrt(suma)
+
+def busqueda_kdtree(nodo, punto, profundidad = 0, mejor = None):
+    if nodo is None:
+        return mejor
+
+    # Actualiza la mejor central
+    if (mejor is None) or (calcular_distancia(punto, nodo.punto) < calcular_distancia(punto, mejor)):
+        mejor = nodo.punto
+
+    k = 2
+    eje = profundidad % k
+
+    # Decide subárbol para búsqueda
+    if punto[eje] < nodo.punto[eje]:
+        siguiente_rama = nodo.izquierda 
+        otra_rama = nodo.derecha 
+    else:
+        siguiente_rama = nodo.derecha
+        otra_rama = nodo.izquierda
+
+    # Búsqueda recursiva en subárbol más probable
+    mejor = busqueda_kdtree(siguiente_rama, punto, profundidad + 1, mejor)
+
+    # Si es necesario, buscar en el otro subárbol
+    if abs(punto[eje] - nodo.punto[eje]) < calcular_distancia(punto, mejor):
+        mejor = busqueda_kdtree(otra_rama, punto, profundidad + 1, mejor)
+
+    return mejor
+
+# Ubicaciones de las centrales
+centrales = [
+    (200, 500),
+    (300, 100),
+    (450, 150),
+    (520, 480)
+]
+
+# Construir el KD-Tree
+arbol = construir_kdtree(centrales)
+
+# Coordenada de la nueva central
+nueva_central = (325, 200)
+
+# Buscar la central más cercana
+central_cercana = busqueda_kdtree(arbol, nueva_central)
+
+# Calcular la distancia para mostrarla
+distancia = calcular_distancia(nueva_central, central_cercana)
+
+# Mostrar resultados
+print(f"Central más cercana a {nueva_central} es {central_cercana} con una distancia de {distancia:.2f}")
+
+
+
 
 def leer_archivo(filename):
     """
@@ -153,21 +265,32 @@ def leer_archivo(filename):
     n = int(lines[0].strip())
     graph = []
     flujos = []
+    coordenadas = []
 
     for i in range(1, n + 1):
         graph.append(list(map(int, lines[i].strip().split())))
     
     for i in range(n + 1, 2 * n + 1):
         flujos.append(list(map(int, lines[i].strip().split())))
+
+    for i in range(2 * n + 1, len(lines) - 1):
+        coordenadas.append(tuple(map(int, lines[i].strip().strip('()').split(','))))
+
+    nueva_central = tuple(map(int, lines[-1].strip().strip('()').split(',')))
     
-    return n, graph, flujos
+    return n, graph, flujos, coordenadas, nueva_central
 
 filename = input("Nombre del archivo: ")
-n, graph, flujos = leer_archivo(filename)
+n, graph, flujos, coordenadas, nueva_central = leer_archivo(filename)
 
 path, cost = repeated_nearest_neighbor(graph, n)
 max_flow = ford_fulkerson(flujos, 0, n - 1, n)
 
+arbol = construir_kdtree(coordenadas)
+central_cercana = busqueda_kdtree(arbol, nueva_central)
+distancia = calcular_distancia(nueva_central, central_cercana)
+
 print("Mejor ruta encontrada:", path)
 print("Costo de la mejor ruta:", cost)
 print("Flujo máximo:", max_flow)
+print("Central más cercana: ", central_cercana, "\nDistancia: ", distancia)

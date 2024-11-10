@@ -1,0 +1,16 @@
+Autores: 
+  Andrea Medina Rico A01705541
+  Diego Lira A01710369
+  Imanol Muñiz A01701713
+Fecha: 10.11.2024
+
+
+Imanol:
+ - Parte 1, 
+
+ Diego:
+ - Parte 2, Algoritmo Vecino más cercano
+
+ Andrea:
+ - Parte 3, Algoritmo Edmonds - Karp
+ - Parte 4, KD Tree
