@@ -1,4 +1,56 @@
 """
+    Problema 1.
+"""
+def minimum_spanning_tree(adj_matrix):
+    """
+    Calcula el árbol generador mínimo (MST) usando el algoritmo de Kruskal.
+
+    Parámetros:
+        graph (list): Matriz de adyacencia que representa el costo entre nodos.
+    Returns:
+        mst: Lista de aristas en el MST.
+        total_cost: el costo total del MST
+    """
+    n = len(adj_matrix)
+    edges = []
+    for i in range(n):
+        for j in range(i + 1, n):
+            if adj_matrix[i][j] > 0:
+                edges.append((adj_matrix[i][j], i, j))
+
+    edges.sort()
+    parent = list(range(n))
+    rank = [0] * n
+
+    def find(node):
+        if parent[node] != node:
+            parent[node] = find(parent[node])  # Compresión de caminos
+        return parent[node]
+
+    def union(node1, node2):
+        root1 = find(node1)
+        root2 = find(node2)
+        if root1 != root2:
+            if rank[root1] > rank[root2]:
+                parent[root2] = root1
+            elif rank[root1] < rank[root2]:
+                parent[root1] = root2
+            else:
+                parent[root2] = root1
+                rank[root1] += 1
+
+    mst = []
+    total_cost = 0
+
+    for cost, u, v in edges:
+        if find(u) != find(v):
+            union(u, v)
+            mst.append((u, v, cost))
+            total_cost += cost
+
+    return mst, total_cost
+
+"""
     Problema 2.
 """
 def nearest_neighbor(graph, start, n):
@@ -283,6 +335,8 @@ def leer_archivo(filename):
 filename = input("Nombre del archivo: ")
 n, graph, flujos, coordenadas, nueva_central = leer_archivo(filename)
 
+mst, total_cost = minimum_spanning_tree(graph)
+
 path, cost = repeated_nearest_neighbor(graph, n)
 max_flow = ford_fulkerson(flujos, 0, n - 1, n)
 
@@ -290,7 +344,9 @@ arbol = construir_kdtree(coordenadas)
 central_cercana = busqueda_kdtree(arbol, nueva_central)
 distancia = calcular_distancia(nueva_central, central_cercana)
 
-print("Mejor ruta encontrada:", path)
-print("Costo de la mejor ruta:", cost)
-print("Flujo máximo:", max_flow)
-print("Central más cercana: ", central_cercana, "\nDistancia: ", distancia)
+print("[Problema 1] Cableado eficiente:", mst)
+print("[Problema 1] Costo del cableado:", total_cost)
+print("[Problema 2] Mejor ruta encontrada:", path)
+print("[Problema 2] Costo de la mejor ruta:", cost)
+print("[Problema 3] Flujo máximo:", max_flow)
+print("[Problema 4]Central más cercana: ", central_cercana, "\nDistancia: ", distancia)
