@@ -53,6 +53,7 @@ def minimum_spanning_tree(adj_matrix):
 """
     Problema 2.
 """
+
 def nearest_neighbor(graph, start, n):
     """
     Encuentra una ruta aproximada de menor costo usando el algoritmo de vecino más cercano.
@@ -106,6 +107,9 @@ def repeated_nearest_neighbor(graph, n):
         if cost < best_cost:
             best_cost = cost
             best_path = path
+
+    index_to_letter = {i: chr(65 + i) for i in range(n)}
+    best_path = [index_to_letter[i] for i in best_path]
 
     return best_path, best_cost
 
@@ -247,6 +251,16 @@ def calcular_distancia(punto1, punto2):
     return math.sqrt(suma)
 
 def busqueda_kdtree(nodo, punto, profundidad = 0, mejor = None):
+    """
+    Función: busqueda_kdtree
+    Parámetros:
+            nodo (NodoKDTree): Nodo actual
+            punto (tuple): Coordenadas del punto a buscar
+            profundidad (int): Nivel de profundidad del árbol
+            mejor (tuple): Mejor punto encontrado
+    Returns: tuple del punto más cercano
+    Descripción: Busca el punto más cercano a un punto dado en un árbol KD
+    """
     if nodo is None:
         return mejor
 
@@ -273,31 +287,6 @@ def busqueda_kdtree(nodo, punto, profundidad = 0, mejor = None):
         mejor = busqueda_kdtree(otra_rama, punto, profundidad + 1, mejor)
 
     return mejor
-
-# Ubicaciones de las centrales
-centrales = [
-    (200, 500),
-    (300, 100),
-    (450, 150),
-    (520, 480)
-]
-
-# Construir el KD-Tree
-arbol = construir_kdtree(centrales)
-
-# Coordenada de la nueva central
-nueva_central = (325, 200)
-
-# Buscar la central más cercana
-central_cercana = busqueda_kdtree(arbol, nueva_central)
-
-# Calcular la distancia para mostrarla
-distancia = calcular_distancia(nueva_central, central_cercana)
-
-# Mostrar resultados
-print(f"Central más cercana a {nueva_central} es {central_cercana} con una distancia de {distancia:.2f}")
-
-
 
 
 def leer_archivo(filename):
@@ -349,4 +338,4 @@ print("[Problema 1] Costo del cableado:", total_cost)
 print("[Problema 2] Mejor ruta encontrada:", path)
 print("[Problema 2] Costo de la mejor ruta:", cost)
 print("[Problema 3] Flujo máximo:", max_flow)
-print("[Problema 4]Central más cercana: ", central_cercana, "\nDistancia: ", distancia)
+print("[Problema 4] Central más cercana: ", central_cercana, "\nDistancia: ", distancia)

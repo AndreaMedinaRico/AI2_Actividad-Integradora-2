@@ -1,0 +1,8 @@
+Nombre del archivo: Equipo_11_Entrada_1.txt 
+[Problema 1] Cableado eficiente: [(0, 1, 10), (0, 2, 15), (0, 3, 20)]
+[Problema 1] Costo del cableado: 45
+[Problema 2] Mejor ruta encontrada: ['A', 'B', 'D', 'C', 'A']
+[Problema 2] Costo de la mejor ruta: 80
+[Problema 3] Flujo máximo: 78
+[Problema 4] Central más cercana:  (300, 100)
+Distancia:  103.07764064044152
