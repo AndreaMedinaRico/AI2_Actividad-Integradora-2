@@ -1,0 +1,10 @@
+Parte 2:
+Mejor ruta encontrada: ['A', 'B', 'E', 'C', 'D', 'A']
+Costo de la mejor ruta: 33
+
+Parte 3:
+Flujo máximo: 62
+
+Parte 4:
+Central más cercana: (250, 100)
+Distancia:  181.72781845386248 km
